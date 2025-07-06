@@ -4,7 +4,7 @@ import org.apache.http.client.fluent.Response;
 
 public interface Communication {
 
-    Response create(String data);
+    Response create(String data) throws Exception;
 
-    Response getAll();
+    Response getAll() throws Exception;
 }
