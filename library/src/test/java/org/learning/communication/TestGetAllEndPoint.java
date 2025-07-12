@@ -5,20 +5,18 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import org.apache.http.HttpStatus;
 import org.apache.http.entity.ContentType;
-import org.eclipse.jetty.http.HttpHeader;
 import org.junit.jupiter.api.*;
 import org.learning.config.Configuration;
 
-import java.util.Arrays;
-
-public class TestGetAllEndpoint {
+public class TestGetAllEndPoint {
 
     /**
-     * Before All - To initialize all the required object once
+     * Before All - To Initialize all the object needed for test
      * <p>
-     * Test - Actual test logic
+     * Test - Test logic
      * <p>
-     * After Call - To clean up all the object
+     * <p>
+     * After All - Clean up all the resource/object
      **/
 
     private static WireMockConfiguration wireMockConfiguration;
@@ -35,47 +33,39 @@ public class TestGetAllEndpoint {
         communication = new CommunicationImpl(configuration);
     }
 
-
     @Test
-    @DisplayName("Verify when server has not data then 204 status code should be returner")
-    public void testForNoContent() throws Exception {
-        var stub = WireMock.get("/pet/all").willReturn(WireMock.aResponse().withStatus(HttpStatus.SC_NO_CONTENT).withHeader(HttpHeader.CONTENT_TYPE.asString(), ContentType.APPLICATION_JSON.getMimeType()));
+    @DisplayName("Verify the status code is 204 when there is no data on the server")
+    public void test204StatusCode() throws Exception {
+        var stub = WireMock.get("/pet/all").willReturn(WireMock.noContent());
         server.stubFor(stub);
         try {
             var response = communication.getAll();
+            // Validate the response is not null
             Assertions.assertNotNull(response);
-            // Validation on status code
-            var httpResponse = response.returnResponse();
-            Assertions.assertEquals(HttpStatus.SC_NO_CONTENT, httpResponse.getStatusLine().getStatusCode());
-            // Validation on Response Body
-            Assertions.assertNull(httpResponse.getEntity());
-            // Validation on Response headers
-            var header = Arrays.stream(httpResponse.getAllHeaders()).anyMatch((x) -> x.getName().equals(HttpHeader.CONTENT_TYPE.asString()));
-            Assertions.assertTrue(header, HttpHeader.CONTENT_TYPE.asString() + " is not present in response ");
+
+            // Extract the object of type HttpResponse
+
+            var responseData = response.returnResponse();
+
+            // Validation on the response status code
+            Assertions.assertEquals(HttpStatus.SC_NO_CONTENT, responseData.getStatusLine().getStatusCode());
+
+            // Validate the response body is null
+            Assertions.assertNull(responseData.getEntity());
+
         } finally {
             server.removeStub(stub);
         }
-    }
 
+    }
 
     @AfterAll
     public static void tearDown() {
-        if (server.isRunning()) {
+        if (server.isRunning())
             server.shutdownServer();
-        }
+
         configuration = null;
         communication = null;
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-

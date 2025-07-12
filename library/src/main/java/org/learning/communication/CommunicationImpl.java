@@ -21,6 +21,7 @@ public class CommunicationImpl implements Communication {
 
     @Override
     public Response getAll() throws Exception {
-        return Request.Get(this.config.getUrl() + "/pet/all").setHeaders(new BasicHeader(HttpHeaders.ACCEPT, this.config.getContentType().getMimeType())).execute();
+        var response = Request.Get(config.getUrl() + "/pet/all").setHeaders(new BasicHeader(HttpHeaders.ACCEPT, config.getContentType().getMimeType())).execute();
+        return response;
     }
 }
