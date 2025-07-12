@@ -3,10 +3,13 @@ package org.learning.communication;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.*;
 import org.learning.config.Configuration;
+
+import java.util.Arrays;
 
 public class TestGetAllEndPoint {
 
@@ -36,7 +39,7 @@ public class TestGetAllEndPoint {
     @Test
     @DisplayName("Verify the status code is 204 when there is no data on the server")
     public void test204StatusCode() throws Exception {
-        var stub = WireMock.get("/pet/all").willReturn(WireMock.noContent());
+        var stub = WireMock.get("/pet/all").willReturn(WireMock.noContent().withHeader(HttpHeaders.CONTENT_TYPE, configuration.getContentType().getMimeType()));
         server.stubFor(stub);
         try {
             var response = communication.getAll();
@@ -52,6 +55,15 @@ public class TestGetAllEndPoint {
 
             // Validate the response body is null
             Assertions.assertNull(responseData.getEntity());
+
+            var header = Arrays.stream(responseData.getHeaders(HttpHeaders.CONTENT_TYPE)).findFirst();
+
+            if (header.isPresent()) {
+                // Validation for response header
+                Assertions.assertEquals(header.get().getValue(), configuration.getContentType().getMimeType());
+            } else {
+                Assertions.fail("Response dose not have the " + HttpHeaders.CONTENT_TYPE + " header.");
+            }
 
         } finally {
             server.removeStub(stub);
