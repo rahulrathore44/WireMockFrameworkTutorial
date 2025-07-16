@@ -4,12 +4,16 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.http.Body;
+import net.javacrumbs.jsonunit.assertj.JsonAssertions;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.apache.http.entity.ContentType;
+import org.apache.http.util.EntityUtils;
 import org.junit.jupiter.api.*;
 import org.learning.config.Configuration;
 
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public class TestGetAllEndPoint {
@@ -128,6 +132,18 @@ public class TestGetAllEndPoint {
 
             // validation on response body
             Assertions.assertNotNull(responseData.getEntity());
+
+
+            try(InputStream inputStream = responseData.getEntity().getContent()) {
+                var dataInBytes = inputStream.readAllBytes();
+                var dataInString = new String(dataInBytes, StandardCharsets.UTF_8);
+                JsonAssertions.assertThatJson(dataInString).isEqualTo(responseBody);
+            }catch (Exception e){
+                Assertions.fail(e.getMessage());
+            }
+
+            var dataInString = EntityUtils.toString(responseData.getEntity(),StandardCharsets.UTF_8);
+            JsonAssertions.assertThatJson(dataInString).isEqualTo(responseBody);
 
         } finally {
             server.removeStub(stub);
