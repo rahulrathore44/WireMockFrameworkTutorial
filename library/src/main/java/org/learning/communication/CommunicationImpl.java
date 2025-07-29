@@ -3,6 +3,7 @@ package org.learning.communication;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 import org.learning.config.Configuration;
 
@@ -16,7 +17,11 @@ public class CommunicationImpl implements Communication {
 
     @Override
     public Response create(String data) throws Exception {
-        return null;
+        var response = Request.Post(config.getUrl() + "/pet").setHeaders(
+                new BasicHeader(HttpHeaders.CONTENT_TYPE, config.getContentType().getMimeType()),
+                new BasicHeader(HttpHeaders.ACCEPT, config.getContentType().getMimeType())
+        ).body(new StringEntity(data)).execute();
+        return response;
     }
 
     @Override
