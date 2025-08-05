@@ -6,6 +6,7 @@ import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 import com.github.tomakehurst.wiremock.http.Body;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import com.github.tomakehurst.wiremock.matching.MatchesJsonPathPattern;
+import com.github.tomakehurst.wiremock.matching.MatchesJsonSchemaPattern;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.apache.http.entity.ContentType;
@@ -343,6 +344,148 @@ public class TestCreateEndPoint {
                 .withHeader(HttpHeaders.ACCEPT, equalTo)
                 .withHeader(HttpHeaders.CONTENT_TYPE, WireMock.including(WireMock.equalToIgnoreCase(configuration.getContentType().getMimeType()), endsWith))
                 .withRequestBody(jsonPathWithValue)
+                .willReturn(WireMock.aResponse().withStatus(HttpStatus.SC_CREATED)
+                        .withHeader(HttpHeaders.CONTENT_TYPE, configuration.getContentType().getMimeType())
+                        .withResponseBody(new Body(requestBodyInJson))
+                );
+        server.stubFor(stubForPost);
+        try {
+
+            var response = communication.create(requestBodyInJson);
+
+            // Validation for response not null
+            Assertions.assertNotNull(response);
+
+            // Validation on response status code
+            var responseData = response.returnResponse();
+            Assertions.assertEquals(HttpStatus.SC_CREATED, responseData.getStatusLine().getStatusCode());
+
+            // Validation on response headers
+            var header = Arrays.stream(responseData.getHeaders(HttpHeaders.CONTENT_TYPE)).findFirst();
+            if (header.isPresent()) {
+                Assertions.assertEquals(configuration.getContentType().getMimeType(), header.get().getValue());
+            } else {
+                Assertions.fail("Content Type header is not present in the response");
+            }
+
+            // Validation on response body
+            var actualResponseBody = EntityUtils.toString(responseData.getEntity());
+            Assertions.assertEquals(requestBodyInJson, actualResponseBody);
+
+        } finally {
+            server.removeStub(stubForPost);
+
+        }
+
+    }
+
+    @Test
+    @DisplayName("Verify the 201 status code using request body matcher that uses JSON schema")
+    public void test201CreateWithJsonSchema() throws Exception {
+        var requestBodyInJson = """
+                {
+                	"id": 1,
+                	"name": "Bruno",
+                	"category": {
+                		"id": 1,
+                		"name": "Dog"
+                	},
+                	"photoUrls": [
+                		"http://localhost:8909/pics/dog.jpg"
+                	],
+                	"tags": [
+                		{
+                			"id": 156,
+                			"name": "Four legs dog"
+                		}
+                	],
+                	"status": "sold"
+                }
+                """.stripIndent().trim();
+
+        var equalTo = new EqualToPattern(configuration.getContentType().getMimeType(), true);
+        var endsWith = new EndsWithPattern(configuration.getContentType().getMimeType(), "json");
+        var jsonPathWithValue = new MatchesJsonPathPattern("$.tags[0]", WireMock.equalToJson("""
+                {
+                			"id": "${json-unit.any-number}",
+                			"name": "${json-unit.regex}^[A-Za-z ]+$"
+                		}
+                """, true, true));
+
+        var jsonSchema = """
+                {
+                  "$schema": "http://json-schema.org/draft-04/schema#",
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "category": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "name": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name"
+                      ]
+                    },
+                    "photoUrls": {
+                      "type": "array",
+                      "items": [
+                        {
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "tags": {
+                      "type": "array",
+                      "items": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "id": {
+                              "type": "integer"
+                            },
+                            "name": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "id",
+                            "name"
+                          ]
+                        }
+                      ]
+                    },
+                    "status": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "category",
+                    "photoUrls",
+                    "tags",
+                    "status"
+                  ]
+                }
+                """.stripIndent().trim();
+        var jsonSchemaMatcher = new MatchesJsonSchemaPattern(jsonSchema);
+        var stubForPost = WireMock.post("/pet")
+                .withHeader(HttpHeaders.ACCEPT, equalTo)
+                .withHeader(HttpHeaders.CONTENT_TYPE, WireMock.including(WireMock.equalToIgnoreCase(configuration.getContentType().getMimeType()), endsWith))
+                //.withRequestBody(jsonSchemaMatcher)
+                .withRequestBody(WireMock.matchingJsonSchema(jsonSchema))
                 .willReturn(WireMock.aResponse().withStatus(HttpStatus.SC_CREATED)
                         .withHeader(HttpHeaders.CONTENT_TYPE, configuration.getContentType().getMimeType())
                         .withResponseBody(new Body(requestBodyInJson))
