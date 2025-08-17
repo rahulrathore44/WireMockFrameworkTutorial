@@ -6,11 +6,8 @@ import org.learning.dto.DataObject;
 
 public class XMLValidator extends Validator {
 
-    public final DataObject dataObject;
-
     public XMLValidator(DataObject dataObject) {
         super(dataObject);
-        this.dataObject = dataObject;
     }
 
     @Override

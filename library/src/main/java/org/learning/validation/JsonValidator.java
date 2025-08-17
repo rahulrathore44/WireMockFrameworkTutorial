@@ -6,11 +6,8 @@ import org.learning.dto.DataObject;
 
 public class JsonValidator extends Validator {
 
-    private final DataObject dataObject;
-
     public JsonValidator(DataObject dataObject) {
         super(dataObject);
-        this.dataObject = dataObject;
     }
 
 

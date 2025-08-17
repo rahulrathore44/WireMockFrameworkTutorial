@@ -6,9 +6,9 @@ import org.learning.exception.UnHandledException;
 
 public abstract class Validator {
 
-    private final DataObject dataObject;
+    protected DataObject dataObject;
 
-    Validator(DataObject dataObject){
+    Validator(DataObject dataObject) {
         this.dataObject = dataObject;
     }
 
@@ -17,9 +17,11 @@ public abstract class Validator {
 
     protected void validateStatusCode() throws UnHandledException, InvalidPayloadException {
         var statusCode = dataObject.getStatusCode();
-        switch (statusCode){
-            case 400: throw new InvalidPayloadException(getErrorResponse());
-            case 500: throw new UnHandledException(getErrorResponse());
+        switch (statusCode) {
+            case 400:
+                throw new InvalidPayloadException(getErrorResponse());
+            case 500:
+                throw new UnHandledException(getErrorResponse());
         }
     }
 
