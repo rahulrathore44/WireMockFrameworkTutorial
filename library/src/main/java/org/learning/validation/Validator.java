@@ -15,7 +15,7 @@ public abstract class Validator {
 
     public abstract String getErrorResponse();
 
-    protected void validateStatusCode() throws UnHandledException, InvalidPayloadException {
+    public void validateStatusCode() throws UnHandledException, InvalidPayloadException {
         var statusCode = dataObject.getStatusCode();
         switch (statusCode) {
             case 400:
