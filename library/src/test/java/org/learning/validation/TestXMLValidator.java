@@ -1,4 +1,4 @@
-package org.learning.validator;
+package org.learning.validation;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
@@ -13,16 +13,14 @@ import org.learning.communication.CommunicationImpl;
 import org.learning.config.Configuration;
 import org.learning.dto.DataObject;
 import org.learning.exception.InvalidPayloadException;
-import org.learning.validation.Validator;
-import org.learning.validation.XMLValidator;
 
 public class TestXMLValidator {
 
     private static WireMockConfiguration wireMockConfiguration;
     private static WireMockServer wireMockServer;
-    private static Validator validator;
     private static Communication communication;
     private static Configuration configuration;
+    private static Validator validator;
 
     @BeforeAll
     public static void setUp() {
@@ -31,13 +29,22 @@ public class TestXMLValidator {
         wireMockServer.start();
         configuration = new Configuration.ConfigurationBuilder().withUrl("http://localhost:" + wireMockServer.port()).withContentType(ContentType.APPLICATION_XML).build();
         communication = new CommunicationImpl(configuration);
+    }
 
+    @AfterAll
+    public static void tearDown() {
+        if (wireMockServer.isRunning())
+            wireMockServer.shutdownServer();
+
+        wireMockServer = null;
+        communication = null;
+        configuration = null;
     }
 
     @Test
-    @DisplayName("Verify the validator when server returns 400 status code")
+    @DisplayName("Verify the exception when server return 400 status code")
     public void test400StatusCode() throws Exception {
-        var requestBodyInXml = """
+        var requestBodyInXML = """
                 <pet>
                     <id>-1</id>
                     <name>Bruno</name>
@@ -66,40 +73,30 @@ public class TestXMLValidator {
 
         var stub = WireMock.post("/pet")
                 .withHeader(HttpHeaders.CONTENT_TYPE, WireMock.equalTo(configuration.getContentType().getMimeType()))
-                .withHeader(HttpHeaders.CONTENT_TYPE, WireMock.equalTo(configuration.getContentType().getMimeType()))
+                .withHeader(HttpHeaders.ACCEPT, WireMock.equalTo(configuration.getContentType().getMimeType()))
                 .withRequestBody(WireMock.matchingXPath("/pet/id/text()", WireMock.equalTo("-1")))
                 .willReturn(
                         WireMock.aResponse()
                                 .withStatus(HttpStatus.SC_BAD_REQUEST)
-                                .withResponseBody(new Body(responseBody))
                                 .withHeader(HttpHeaders.CONTENT_TYPE, configuration.getContentType().getMimeType())
+                                .withResponseBody(new Body(responseBody))
                 );
 
-        wireMockServer.stubFor(stub);
 
         try {
-
-            var response = communication.create(requestBodyInXml);
+            wireMockServer.stubFor(stub);
+            var response = communication.create(requestBodyInXML);
             var dto = DataObject.fromResponse(response);
             validator = new XMLValidator(dto);
-
             Assertions.assertThrows(InvalidPayloadException.class, () -> {
                 validator.validateStatusCode();
             });
+            validator.validateResponseHeaders();
         } finally {
             wireMockServer.removeStub(stub);
         }
 
     }
 
-    @AfterAll
-    public static void tearDown() {
-        if (wireMockServer.isRunning())
-            wireMockServer.shutdown();
 
-        wireMockConfiguration = null;
-        wireMockServer = null;
-        communication = null;
-        configuration = null;
-    }
 }
