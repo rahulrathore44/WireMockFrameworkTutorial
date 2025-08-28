@@ -1,0 +1,38 @@
+<pets>
+    <pet>
+        <id>1</id>
+        <name>Bruno</name>
+        <category>
+            <id>1</id>
+            <name>Dog</name>
+        </category>
+        <status>sold</status>
+        <photoUrls>
+            <photoUrls>http://localhost:8909/pics/dog.jpg</photoUrls>
+        </photoUrls>
+        <tags>
+            <tags>
+                <id>1</id>
+                <name>Four legs</name>
+            </tags>
+        </tags>
+    </pet>
+	<pet>
+        <id>2</id>
+        <name>Bruno</name>
+        <category>
+            <id>1</id>
+            <name>Dog</name>
+        </category>
+        <status>sold</status>
+        <photoUrls>
+            <photoUrls>http://localhost:8909/pics/dog.jpg</photoUrls>
+        </photoUrls>
+        <tags>
+            <tags>
+                <id>1</id>
+                <name>Four legs</name>
+            </tags>
+        </tags>
+    </pet>
+</pets>

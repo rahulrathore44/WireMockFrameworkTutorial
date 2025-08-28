@@ -1,0 +1,38 @@
+[
+	{
+		"id": 3,
+		"name": "Bruno",
+		"category": {
+			"id": 1,
+			"name": "Dog"
+		},
+		"photoUrls": [
+			"http://localhost:8909/pics/dog.jpg"
+		],
+		"tags": [
+			{
+				"id": 1,
+				"name": "Four legs"
+			}
+		],
+		"status": "sold"
+	},
+	{
+		"id": 4,
+		"name": "Bruno",
+		"category": {
+			"id": 1,
+			"name": "Dog"
+		},
+		"photoUrls": [
+			"http://localhost:8909/pics/dog.jpg"
+		],
+		"tags": [
+			{
+				"id": 1,
+				"name": "Four legs"
+			}
+		],
+		"status": "sold"
+	}
+]

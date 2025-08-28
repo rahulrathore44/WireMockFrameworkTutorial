@@ -7,6 +7,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 import org.learning.config.Configuration;
 
+import java.io.File;
+
 public class CommunicationImpl implements Communication {
 
     private final Configuration config;
@@ -28,5 +30,10 @@ public class CommunicationImpl implements Communication {
     public Response getAll() throws Exception {
         var response = Request.Get(config.getUrl() + "/pet/all").setHeaders(new BasicHeader(HttpHeaders.ACCEPT, config.getContentType().getMimeType())).execute();
         return response;
+    }
+
+    @Override
+    public Response uploadDataUsingFile(File file, String format) throws Exception {
+        return null;
     }
 }
