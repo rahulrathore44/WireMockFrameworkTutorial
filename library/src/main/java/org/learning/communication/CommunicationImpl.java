@@ -1,9 +1,12 @@
 package org.learning.communication;
 
+import org.apache.hc.core5.net.URIBuilder;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.message.BasicHeader;
 import org.learning.config.Configuration;
 
@@ -34,6 +37,9 @@ public class CommunicationImpl implements Communication {
 
     @Override
     public Response uploadDataUsingFile(File file, String format) throws Exception {
-        return null;
+        var entity = MultipartEntityBuilder.create().addPart("file", new FileBody(file, config.getContentType(), file.getName())).build();
+        var uri = new URIBuilder(config.getUrl() + "/pet/upload").addParameter("format", format).build();
+        var response = Request.Post(uri).body(entity).execute();
+        return response;
     }
 }
