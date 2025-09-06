@@ -45,11 +45,17 @@ public class CommunicationImpl implements Communication {
 
     @Override
     public Response findPetsByStatus(String status) throws Exception {
-        return null;
+        var uri = new URIBuilder(config.getUrl() + "/pet/findPetsByStatus")
+                .addParameter("status", status)
+                .build();
+        var response = Request.Get(uri).addHeader(HttpHeaders.ACCEPT, config.getContentType().getMimeType()).execute();
+        return response;
     }
 
     @Override
     public Response findPetById(String petId) throws Exception {
-        return null;
+        var uri = new URIBuilder(config.getUrl()).setPathSegments("pet", petId).build();
+        var response = Request.Get(uri).addHeader(HttpHeaders.ACCEPT, config.getContentType().getMimeType()).execute();
+        return response;
     }
 }
