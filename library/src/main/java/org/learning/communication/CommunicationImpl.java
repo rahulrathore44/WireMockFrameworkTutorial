@@ -42,4 +42,14 @@ public class CommunicationImpl implements Communication {
         var response = Request.Post(uri).body(entity).execute();
         return response;
     }
+
+    @Override
+    public Response findPetsByStatus(String status) throws Exception {
+        return null;
+    }
+
+    @Override
+    public Response findPetById(String petId) throws Exception {
+        return null;
+    }
 }

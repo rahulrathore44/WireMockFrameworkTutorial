@@ -11,4 +11,8 @@ public interface Communication {
     Response getAll() throws Exception;
 
     Response uploadDataUsingFile(File file, String format) throws Exception;
+
+    Response findPetsByStatus(String status) throws Exception;
+
+    Response findPetById(String petId) throws Exception;
 }
