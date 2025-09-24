@@ -1,15 +1,24 @@
 package org.learning.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+
 import java.util.List;
 
+@JacksonXmlRootElement(localName = "pet")
 public class Pet {
 
     private int id;
     private String name;
     private Category category;
 
+    @JacksonXmlElementWrapper(localName = "photoUrls")
+    @JsonProperty("photoUrls")
     private List<String> photoUrls;
 
+    @JacksonXmlElementWrapper(localName = "tags")
+    @JsonProperty("tags")
     private List<Tag> tags;
     private String status;
 
