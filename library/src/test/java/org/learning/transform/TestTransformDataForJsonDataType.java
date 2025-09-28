@@ -69,7 +69,7 @@ public class TestTransformDataForJsonDataType {
         var stubForPost = WireMock.post("/pet")
                 .withHeader(HttpHeaders.ACCEPT, WireMock.equalTo(configuration.getContentType().getMimeType()))
                 .withHeader(HttpHeaders.CONTENT_TYPE, WireMock.equalTo(configuration.getContentType().getMimeType()))
-                .withRequestBody(WireMock.equalToJson(bodyInJson,true,true))
+                .withRequestBody(WireMock.equalToJson(bodyInJson, true, true))
                 .willReturn(
                         WireMock.aResponse()
                                 .withStatus(HttpStatus.SC_CREATED)
@@ -89,9 +89,58 @@ public class TestTransformDataForJsonDataType {
             var responsePetObj = transformData.serialize(responseData);
             Assertions.assertEquals(1, responsePetObj.getId());
             Assertions.assertEquals("Bruno", responsePetObj.getName());
-        }finally {
+        } finally {
             wireMockServer.removeStub(stubForPost);
         }
+    }
+
+    @Test
+    @DisplayName("Verify the data transform layer for json data type in list")
+    public void testTransformDateForJsonList() throws Exception {
+        var tag = TagBuilder.create().withId(1).withName("Happy Dog").build();
+        var category = CategoryBuilder.create().withId(2).withName("Dog").build();
+        var petOne = PetBuilder.create().withId(1).withName("Bruno").withStatus("sold")
+                .withCategory(category)
+                .withTags(List.of(tag))
+                .withPhotoUrls(List.of("http://locahost:9090/dog.jpg"))
+                .build();
+
+        var petTwo = PetBuilder.create().withId(2).withName("Bruno").withStatus("sold")
+                .withCategory(category)
+                .withTags(List.of(tag))
+                .withPhotoUrls(List.of("http://locahost:9090/dog.jpg"))
+                .build();
+
+        var listOfPets = List.of(petOne, petTwo);
+
+        var responseBody = transformData.deSerialize(listOfPets);
+
+        var body = new Body(responseBody);
+        var stub = WireMock.get("/pet/all")
+                .willReturn(WireMock.aResponse()
+                        .withStatus(HttpStatus.SC_OK)
+                        .withHeader(HttpHeaders.CONTENT_TYPE, configuration.getContentType().getMimeType())
+                        .withResponseBody(body));
+
+        wireMockServer.stubFor(stub);
+        try {
+
+            var response = communication.getAll();
+
+            // Validation on response
+            Assertions.assertNotNull(response);
+
+            var dto = DataObject.fromResponse(response);
+            validator = new JsonValidator(dto);
+            validator.validateStatusCode();
+            validator.validateResponseHeaders();
+            var responseObject = EntityUtils.toString(dto.getResponseBody());
+            var responseObjects = transformData.serializes(responseObject);
+            Assertions.assertEquals(2, responseObjects.size());
+        } finally {
+            wireMockServer.removeStub(stub);
+        }
+
     }
 
 }
