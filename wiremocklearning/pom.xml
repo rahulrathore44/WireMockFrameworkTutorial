@@ -53,5 +53,12 @@
             <version>4.5.14</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.github.jknack/handlebars -->
+        <dependency>
+            <groupId>com.github.jknack</groupId>
+            <artifactId>handlebars</artifactId>
+            <version>4.5.0</version>
+        </dependency>
+
     </dependencies>
 </project>
