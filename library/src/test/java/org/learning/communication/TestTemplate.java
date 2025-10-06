@@ -23,6 +23,7 @@ public class TestTemplate {
     @BeforeAll
     public static void setUp() {
         wireMockConfiguration = new WireMockConfiguration().dynamicPort().globalTemplating(true);
+        //wireMockConfiguration = new WireMockConfiguration().dynamicPort().templatingEnabled(true);
         server = new WireMockServer(wireMockConfiguration);
         server.start();
         configuration = new Configuration.ConfigurationBuilder().withUrl("http://localhost:" + server.port()).withContentType(ContentType.APPLICATION_JSON).build();
@@ -69,6 +70,7 @@ public class TestTemplate {
                 .willReturn(WireMock.aResponse().withStatus(HttpStatus.SC_CREATED)
                         .withHeader(HttpHeaders.CONTENT_TYPE, contentTypeHeader)
                         .withResponseBody(new Body(templateBody))
+                        //.withTransformers("response-template")
                 );
         server.stubFor(stubForPost);
         try {
