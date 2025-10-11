@@ -95,4 +95,66 @@ public class TestResponseTemplate {
 
         }
     }
+
+    @Test
+    @DisplayName("Verify the response template using JSON Path helpers")
+    public void testResponseTemplateWithJsonPathHelpers() throws Exception {
+        var requestBodyInJson = """
+                {
+                	"id": 1,
+                	"name": "Bruno",
+                	"category": {
+                		"id": 1,
+                		"name": "Dog"
+                	},
+                	"photoUrls": [
+                		"http://localhost:8909/pics/dog.jpg"
+                	],
+                	"tags": [
+                		{
+                			"id": 1,
+                			"name": "Four legs"
+                		}
+                	],
+                	"status": "sold"
+                }
+                """.stripIndent().trim();
+
+        // {{jsonPath request.body 'json-path'}}
+        // {{parseJson request.body 'bodyVar'}}
+        // {{toJson request.headers}}
+        // {jsonMerge object1 object2}}
+
+
+
+        var acceptHeaderValue = "{{toJson request.headers}}";
+        //var responseBody = "{{jsonPath request.body '$.category.name'}}";
+        //var responseBody = "{{jsonPath request.body '$.category'}}";
+        /* var responseBody = "{{parseJson request.body 'bodyJson'}}\n" +
+                "{{bodyJson.photoUrls}}"; */
+
+        var responseBody = "{{parseJson request.body 'bodyJson'}}\n" +
+                "{{bodyJson.category.id}}";
+        var stubForPost = WireMock.post("/pet")
+                .withRequestBody(WireMock.equalToJson(requestBodyInJson, true, true))
+                .willReturn(WireMock.aResponse().withStatus(HttpStatus.SC_CREATED)
+                        .withHeader(HttpHeaders.CONTENT_TYPE, acceptHeaderValue)
+                        .withResponseBody(new Body(responseBody))
+                        .withTransformers("response-template")
+                );
+        wireMockServer.stubFor(stubForPost);
+        try {
+
+            var response = communication.create(requestBodyInJson);
+            Assertions.assertNotNull(response);
+            var responseObj = response.returnResponse();
+            var headers = responseObj.getAllHeaders();
+            var body = EntityUtils.toString(responseObj.getEntity());
+            System.out.println("Response Body: " + body);
+            System.out.println("Response Headers: " + Arrays.toString(headers));
+        } finally {
+            wireMockServer.removeStub(stubForPost);
+
+        }
+    }
 }
