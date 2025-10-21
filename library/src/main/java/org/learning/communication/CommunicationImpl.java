@@ -31,7 +31,11 @@ public class CommunicationImpl implements Communication {
 
     @Override
     public Response getAll() throws Exception {
-        var response = Request.Get(config.getUrl() + "/pet/all").setHeaders(new BasicHeader(HttpHeaders.ACCEPT, config.getContentType().getMimeType())).execute();
+        var response = Request.Get(config.getUrl() + "/pet/all")
+                .setHeaders(new BasicHeader(HttpHeaders.ACCEPT, config.getContentType().getMimeType()))
+                .connectTimeout(config.getConnectionTimeout())
+                .socketTimeout(config.getSocketTimeout())
+                .execute();
         return response;
     }
 
