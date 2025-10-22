@@ -3,6 +3,7 @@ package org.learning.timeouts;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.github.tomakehurst.wiremock.http.UniformDistribution;
 import org.apache.http.HttpHeaders;
 import org.apache.http.entity.ContentType;
 import org.junit.jupiter.api.*;
@@ -65,6 +66,27 @@ public class TestFaultSimulation {
             }
         });
 
+    }
+
+    @Test
+    @DisplayName("Verify the status code is 204 with random delay")
+    public void test204StatusCodeWithRandomDelay() throws Exception {
+        var stub = WireMock.get("/pet/all")
+                .willReturn(WireMock
+                        .noContent()
+                        .withHeader(HttpHeaders.CONTENT_TYPE, configuration.getContentType().getMimeType())
+                        // stable latency 5sec +/- 2sec. 3sec, 7sec
+                        .withRandomDelay(new UniformDistribution(3000, 7000))
+                );
+        wireMockServer.stubFor(stub);
+        try {
+            var response = communication.getAll();
+            // Validate the response is not null
+            Assertions.assertNotNull(response);
+
+        } finally {
+            wireMockServer.removeStub(stub);
+        }
     }
 
 }
