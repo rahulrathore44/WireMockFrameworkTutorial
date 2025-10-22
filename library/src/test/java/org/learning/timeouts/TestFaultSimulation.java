@@ -45,8 +45,8 @@ public class TestFaultSimulation {
 
 
     @Test
-    @DisplayName("Verify the status code is 204 when there is no data on the server")
-    public void test204StatusCode() throws Exception {
+    @DisplayName("Verify the status code is 204 when there delay in downstream service response")
+    public void test204StatusCodeWithFixedDelay() throws Exception {
         var stub = WireMock.get("/pet/all")
                 .willReturn(WireMock
                         .noContent()

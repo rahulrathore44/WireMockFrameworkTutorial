@@ -22,10 +22,13 @@ public class CommunicationImpl implements Communication {
 
     @Override
     public Response create(String data) throws Exception {
-        var response = Request.Post(config.getUrl() + "/pet").setHeaders(
-                new BasicHeader(HttpHeaders.CONTENT_TYPE, config.getContentType().getMimeType()),
-                new BasicHeader(HttpHeaders.ACCEPT, config.getContentType().getMimeType())
-        ).body(new StringEntity(data)).execute();
+        var response = Request.Post(config.getUrl() + "/pet")
+                .connectTimeout(config.getConnectionTimeout())
+                .socketTimeout(config.getSocketTimeout())
+                .setHeaders(
+                        new BasicHeader(HttpHeaders.CONTENT_TYPE, config.getContentType().getMimeType()),
+                        new BasicHeader(HttpHeaders.ACCEPT, config.getContentType().getMimeType())
+                ).body(new StringEntity(data)).execute();
         return response;
     }
 
@@ -43,7 +46,11 @@ public class CommunicationImpl implements Communication {
     public Response uploadDataUsingFile(File file, String format) throws Exception {
         var entity = MultipartEntityBuilder.create().addPart("file", new FileBody(file, config.getContentType(), file.getName())).build();
         var uri = new URIBuilder(config.getUrl() + "/pet/upload").addParameter("format", format).build();
-        var response = Request.Post(uri).body(entity).execute();
+        var response = Request.Post(uri)
+                .connectTimeout(config.getConnectionTimeout())
+                .socketTimeout(config.getSocketTimeout())
+                .body(entity)
+                .execute();
         return response;
     }
 
@@ -52,14 +59,22 @@ public class CommunicationImpl implements Communication {
         var uri = new URIBuilder(config.getUrl() + "/pet/findPetsByStatus")
                 .addParameter("status", status)
                 .build();
-        var response = Request.Get(uri).addHeader(HttpHeaders.ACCEPT, config.getContentType().getMimeType()).execute();
+        var response = Request.Get(uri)
+                .connectTimeout(config.getConnectionTimeout())
+                .socketTimeout(config.getSocketTimeout())
+                .addHeader(HttpHeaders.ACCEPT, config.getContentType().getMimeType())
+                .execute();
         return response;
     }
 
     @Override
     public Response findPetById(String petId) throws Exception {
         var uri = new URIBuilder(config.getUrl()).setPathSegments("pet", petId).build();
-        var response = Request.Get(uri).addHeader(HttpHeaders.ACCEPT, config.getContentType().getMimeType()).execute();
+        var response = Request.Get(uri)
+                .addHeader(HttpHeaders.ACCEPT, config.getContentType().getMimeType())
+                .connectTimeout(config.getConnectionTimeout())
+                .socketTimeout(config.getSocketTimeout())
+                .execute();
         return response;
     }
 }
