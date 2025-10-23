@@ -39,6 +39,9 @@ public class TestFaultSimulation {
                 .withSocketTimeOut(10000)
                 .build();
         communication = new CommunicationImpl(configuration);
+        //wireMockServer.setGlobalFixedDelay(20000);
+        //WireMock.setGlobalFixedDelay(20000);
+        //WireMock.setGlobalRandomDelay(new UniformDistribution(5000, 8000));
     }
 
 
