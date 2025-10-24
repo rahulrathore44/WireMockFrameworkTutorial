@@ -5,7 +5,6 @@ import org.learning.models.CategoryBuilder;
 import org.learning.models.PetBuilder;
 import org.learning.models.TagBuilder;
 
-import javax.rmi.ssl.SslRMIClientSocketFactory;
 import java.util.List;
 
 public class MainClass {
