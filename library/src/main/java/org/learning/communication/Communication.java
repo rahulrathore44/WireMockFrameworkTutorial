@@ -15,4 +15,6 @@ public interface Communication {
     Response findPetsByStatus(String status) throws Exception;
 
     Response findPetById(String petId) throws Exception;
+
+    Response updatePetById(String petId, String data) throws Exception;
 }

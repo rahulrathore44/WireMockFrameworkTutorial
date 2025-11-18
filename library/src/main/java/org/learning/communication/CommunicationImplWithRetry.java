@@ -45,4 +45,9 @@ public class CommunicationImplWithRetry implements Communication {
     public Response findPetById(String petId) throws Exception {
         return null;
     }
+
+    @Override
+    public Response updatePetById(String petId, String data) throws Exception {
+        return null;
+    }
 }

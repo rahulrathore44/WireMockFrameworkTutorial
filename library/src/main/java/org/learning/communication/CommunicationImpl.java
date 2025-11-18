@@ -77,4 +77,19 @@ public class CommunicationImpl implements Communication {
                 .execute();
         return response;
     }
+
+    @Override
+    public Response updatePetById(String petId, String data) throws Exception {
+        var uri = new URIBuilder(config.getUrl()).setPathSegments("pet", petId).build();
+        var response = Request.Patch(uri)
+                .setHeaders(
+                        new BasicHeader(HttpHeaders.ACCEPT, config.getContentType().getMimeType()),
+                        new BasicHeader(HttpHeaders.CONTENT_TYPE, config.getContentType().getMimeType())
+                )
+                .connectTimeout(config.getConnectionTimeout())
+                .socketTimeout(config.getSocketTimeout())
+                .body(new StringEntity(data))
+                .execute();
+        return response;
+    }
 }
