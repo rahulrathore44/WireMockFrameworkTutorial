@@ -134,17 +134,67 @@ public class TestGetAllEndPoint {
             Assertions.assertNotNull(responseData.getEntity());
 
 
-            try(InputStream inputStream = responseData.getEntity().getContent()) {
+            try (InputStream inputStream = responseData.getEntity().getContent()) {
                 var dataInBytes = inputStream.readAllBytes();
                 var dataInString = new String(dataInBytes, StandardCharsets.UTF_8);
                 JsonAssertions.assertThatJson(dataInString).isEqualTo(responseBody);
-            }catch (Exception e){
+            } catch (Exception e) {
                 Assertions.fail(e.getMessage());
             }
 
-            var dataInString = EntityUtils.toString(responseData.getEntity(),StandardCharsets.UTF_8);
+            var dataInString = EntityUtils.toString(responseData.getEntity(), StandardCharsets.UTF_8);
             JsonAssertions.assertThatJson(dataInString).isEqualTo(responseBody);
 
+        } finally {
+            server.removeStub(stub);
+        }
+
+    }
+
+    @Test
+    @DisplayName("Verify that the server returns 200 ok status code with repose data verify using wiremock server")
+    public void test200OkStatusCodeVerifyWithWireMockServer() throws Exception {
+
+        var responseBody = """
+                    {
+                      "pets": [
+                        {
+                          "id": 1,
+                          "name": "Bruno",
+                          "category": {
+                            "id": 1,
+                            "name": "Dog"
+                          },
+                          "photoUrls": [
+                            "http://localhost:8909/pics/dog.jpg"
+                          ],
+                          "tags": [
+                            {
+                              "id": 1,
+                              "name": "Four legs"
+                            }
+                          ],
+                          "status": "sold"
+                        }
+                      ]
+                    }
+                """.trim();
+
+        var body = new Body(responseBody);
+        var stub = WireMock.get("/pet/all")
+                .willReturn(
+                        WireMock.aResponse()
+                                .withStatus(HttpStatus.SC_OK)
+                                .withHeader(HttpHeaders.CONTENT_TYPE, configuration.getContentType().getMimeType())
+                                .withResponseBody(body)
+                );
+        server.stubFor(stub);
+        try {
+            communication.getAll();
+            //var query = WireMock.postRequestedFor(WireMock.urlEqualTo("/pet/all"));
+            var query = WireMock.getRequestedFor(WireMock.urlEqualTo("/pet/all"));
+            server.verify(query);
+            //server.verify(3, query);
         } finally {
             server.removeStub(stub);
         }
