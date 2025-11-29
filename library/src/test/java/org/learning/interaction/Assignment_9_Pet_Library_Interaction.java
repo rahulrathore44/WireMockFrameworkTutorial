@@ -14,19 +14,19 @@ public class Assignment_9_Pet_Library_Interaction {
     public static void main(String[] args) {
         int petId = random.nextInt(1, 100);
         var category = CategoryBuilder.create()
-                .withId(1)
-                .withName("Animal")
+                .withId(2)
+                .withName("Dog")
                 .build();
 
         var tag = TagBuilder.create()
-                .withId(2)
-                .withName("Good Dog")
+                .withId(1)
+                .withName("Happy Dog")
                 .build();
 
         var pet = PetBuilder.create()
                 .withId(petId)
                 .withName("Bruno")
-                .withPhotoUrls(List.of("http://localhost:8080/dog.jpg"))
+                .withPhotoUrls(List.of("http://localhost:9090/dog.jpg"))
                 .withStatus("sold")
                 .withCategory(category)
                 .withTags(List.of(tag))
