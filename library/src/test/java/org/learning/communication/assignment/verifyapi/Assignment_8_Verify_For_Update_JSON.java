@@ -13,7 +13,7 @@ import org.learning.communication.Communication;
 import org.learning.communication.CommunicationImpl;
 import org.learning.config.Configuration;
 
-public class Assignment_8_Verify_For_Update_XML {
+public class Assignment_8_Verify_For_Update_JSON {
 
     private static WireMockConfiguration wireMockConfiguration;
     private static WireMockServer wireMockServer;
