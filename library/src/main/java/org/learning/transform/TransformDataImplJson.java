@@ -50,4 +50,18 @@ public class TransformDataImplJson implements TransformData {
             throw new RuntimeException(e);
         }
     }
+
+    /**
+     *  The following is the implementation to fix the exception "com.fasterxml.jackson.databind.exc.MismatchedInputException."
+     *   @Override
+     *   public List<Pet> serializes(String data) {
+     *         try {
+     *             var petWrapper = mapper.readValue(data, new TypeReference<PetWrapper>() {
+     *             });
+     *             return petWrapper.getPets();
+     *         } catch (Exception e) {
+     *             throw new RuntimeException(e);
+     *         }
+     *     }
+     */
 }
