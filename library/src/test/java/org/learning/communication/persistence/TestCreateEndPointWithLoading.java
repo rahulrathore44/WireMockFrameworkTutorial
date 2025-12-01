@@ -1,10 +1,7 @@
 package org.learning.communication.persistence;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
-import com.github.tomakehurst.wiremock.http.Body;
-import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpStatus;
 import org.apache.http.entity.ContentType;
@@ -16,6 +13,11 @@ import org.learning.config.Configuration;
 
 import java.util.Arrays;
 
+/**
+ * To run this test
+ * <p>
+ * Ensure that the system has read and write access to the location configured in the withRootDirectory() method.
+ */
 public class TestCreateEndPointWithLoading {
 
     private static WireMockConfiguration wireMockConfiguration;
