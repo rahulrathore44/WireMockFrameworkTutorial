@@ -1,7 +1,10 @@
 package org.learning.communication.persistence;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.common.SingleRootFileSource;
+import com.github.tomakehurst.wiremock.common.filemaker.FilenameMaker;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
+import com.github.tomakehurst.wiremock.standalone.JsonFileMappingsSource;
 import com.github.tomakehurst.wiremock.standalone.MappingsLoader;
 import com.github.tomakehurst.wiremock.stubbing.StubMapping;
 import com.github.tomakehurst.wiremock.stubbing.StubMappings;
@@ -96,7 +99,64 @@ public class TestCreateEndPointWithCustomLoading {
             Assertions.assertEquals(requestBodyInJson, actualResponseBody);
 
         } finally {
-            //server.removeStub(stubForPost);
+            server.resetMappings();
+
+        }
+
+    }
+
+    @Test
+    @DisplayName("Verify the 201 status code along with request and response headers with JsonFileMappingsSource")
+    public void test201CreatedWithHeaderWithJsonFileMappingsSource() throws Exception {
+        var requestBodyInJson = """
+                {
+                	"id": 1,
+                	"name": "Bruno",
+                	"category": {
+                		"id": 1,
+                		"name": "Dog"
+                	},
+                	"photoUrls": [
+                		"http://localhost:8909/pics/dog.jpg"
+                	],
+                	"tags": [
+                		{
+                			"id": 1,
+                			"name": "Four legs"
+                		}
+                	],
+                	"status": "sold"
+                }
+                """.stripIndent().trim();
+
+        try {
+            var source = new SingleRootFileSource("C:\\Data\\Folder1");
+            var nameMaker = new FilenameMaker();
+            var loader = new JsonFileMappingsSource(source, nameMaker);
+            server.loadMappingsUsing(loader);
+            var response = communication.create(requestBodyInJson);
+
+            // Validation for response not null
+            Assertions.assertNotNull(response);
+
+            // Validation on response status code
+            var responseData = response.returnResponse();
+            Assertions.assertEquals(HttpStatus.SC_CREATED, responseData.getStatusLine().getStatusCode());
+
+            // Validation on response headers
+            var header = Arrays.stream(responseData.getHeaders(HttpHeaders.CONTENT_TYPE)).findFirst();
+            if (header.isPresent()) {
+                Assertions.assertEquals(configuration.getContentType().getMimeType(), header.get().getValue());
+            } else {
+                Assertions.fail("Content Type header is not present in the response");
+            }
+
+            // Validation on response body
+            var actualResponseBody = EntityUtils.toString(responseData.getEntity());
+            Assertions.assertEquals(requestBodyInJson, actualResponseBody);
+
+        } finally {
+            server.resetMappings();
 
         }
 
@@ -142,6 +202,7 @@ class CustomMappingsLoader implements MappingsLoader {
               "insertionIndex" : 2
             }
             """.trim().stripIndent();
+
     @Override
     public void loadMappingsInto(StubMappings stubMappings) {
         var mapping = StubMapping.buildFrom(stub);

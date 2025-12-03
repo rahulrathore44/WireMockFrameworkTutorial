@@ -1,0 +1,33 @@
+{
+  "id" : "3c45c631-031c-4a13-89aa-b775f62b514c",
+  "name" : "StubForHeader",
+  "request" : {
+    "url" : "/pet",
+    "method" : "POST",
+    "headers" : {
+      "Accept" : {
+        "equalTo" : "application/json",
+        "caseInsensitive" : true
+      },
+      "Content-Type" : {
+        "equalTo" : "application/json",
+        "caseInsensitive" : true
+      }
+    },
+    "bodyPatterns" : [ {
+      "equalToJson" : "{\n\t\"id\": 1,\n\t\"name\": \"Bruno\",\n\t\"category\": {\n\t\t\"id\": 1,\n\t\t\"name\": \"Dog\"\n\t},\n\t\"photoUrls\": [\n\t\t\"http://localhost:8909/pics/dog.jpg\"\n\t],\n\t\"tags\": [\n\t\t{\n\t\t\t\"id\": 1,\n\t\t\t\"name\": \"Four legs\"\n\t\t}\n\t],\n\t\"status\": \"sold\"\n}",
+      "ignoreArrayOrder" : true,
+      "ignoreExtraElements" : true
+    } ]
+  },
+  "response" : {
+    "status" : 201,
+    "body" : "{\n\t\"id\": 1,\n\t\"name\": \"Bruno\",\n\t\"category\": {\n\t\t\"id\": 1,\n\t\t\"name\": \"Dog\"\n\t},\n\t\"photoUrls\": [\n\t\t\"http://localhost:8909/pics/dog.jpg\"\n\t],\n\t\"tags\": [\n\t\t{\n\t\t\t\"id\": 1,\n\t\t\t\"name\": \"Four legs\"\n\t\t}\n\t],\n\t\"status\": \"sold\"\n}",
+    "headers" : {
+      "Content-Type" : "application/json"
+    }
+  },
+  "uuid" : "3c45c631-031c-4a13-89aa-b775f62b514c",
+  "persistent" : true,
+  "insertionIndex" : 10
+}
