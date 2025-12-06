@@ -43,7 +43,8 @@ public class TestDeleteEndPoint {
 
         var stubForDelete = WireMock.delete(WireMock.urlPathTemplate("/pet/{petId}"))
                 .withPathParam("petId", WireMock.equalTo("3"))
-                .withBasicAuth("admin", "welcome")
+                // use admin & welcome
+                .withBasicAuth("", "")
                 .willReturn(
                         WireMock.ok()
                 ).atPriority(1);
@@ -57,7 +58,8 @@ public class TestDeleteEndPoint {
         try {
             wireMockServer.stubFor(stubForDelete);
             wireMockServer.stubFor(stubForDelete401);
-            var response = communication.deletePetById("3", "admin", "welcome");
+            // use admin & welcome
+            var response = communication.deletePetById("3", "", "");
             Assertions.assertNotNull(response);
             Assertions.assertEquals(HttpStatus.SC_OK, response.returnResponse().getStatusLine().getStatusCode());
             response = communication.deletePetById("3", null, null);
