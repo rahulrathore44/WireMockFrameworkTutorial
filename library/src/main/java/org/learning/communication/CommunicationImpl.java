@@ -1,5 +1,6 @@
 package org.learning.communication;
 
+import com.networknt.schema.utils.StringUtils;
 import org.apache.hc.core5.net.URIBuilder;
 import org.apache.http.HttpHeaders;
 import org.apache.http.client.fluent.Request;
@@ -11,6 +12,8 @@ import org.apache.http.message.BasicHeader;
 import org.learning.config.Configuration;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 public class CommunicationImpl implements Communication {
 
@@ -91,5 +94,32 @@ public class CommunicationImpl implements Communication {
                 .body(new StringEntity(data))
                 .execute();
         return response;
+    }
+
+    @Override
+    public Response deletePetById(String petId, String user, String pass) throws Exception {
+        var uri = new URIBuilder(config.getUrl()).setPathSegments("pet", petId).build();
+        var cred = getEncryptedText(user, pass);
+        var request = Request.Delete(uri)
+                .connectTimeout(config.getConnectionTimeout())
+                .socketTimeout(config.getSocketTimeout());
+
+        if (StringUtils.isNotBlank(cred)) {
+            request.setHeaders(
+                    new BasicHeader(HttpHeaders.AUTHORIZATION, "Basic " + cred)
+            );
+        }
+
+        var response = request.execute();
+
+        return response;
+    }
+
+    private String getEncryptedText(String user, String pass) {
+        if (StringUtils.isNotBlank(user) && StringUtils.isNotBlank(pass)) {
+            var cred = user + ":" + pass;
+            return Base64.getEncoder().encodeToString(cred.getBytes(StandardCharsets.UTF_8));
+        }
+        return null;
     }
 }

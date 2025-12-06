@@ -17,4 +17,6 @@ public interface Communication {
     Response findPetById(String petId) throws Exception;
 
     Response updatePetById(String petId, String data) throws Exception;
+
+    Response deletePetById(String petId, String user, String pass) throws Exception;
 }
