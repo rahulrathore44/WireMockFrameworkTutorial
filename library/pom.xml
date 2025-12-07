@@ -79,5 +79,12 @@
             <artifactId>resilience4j-retry</artifactId>
             <version>2.3.0</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.wiremock.extensions/wiremock-faker-extension -->
+        <dependency>
+            <groupId>org.wiremock.extensions</groupId>
+            <artifactId>wiremock-faker-extension</artifactId>
+            <version>0.2.0</version>
+        </dependency>
     </dependencies>
 </project>

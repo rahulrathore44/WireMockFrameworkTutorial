@@ -28,10 +28,15 @@ public class TestResponseTemplate {
 
     @BeforeAll
     public static void setUp() {
-        wireMockConfiguration = new WireMockConfiguration().templatingEnabled(true).extensions(new CustomResponseTransformer());
+        wireMockConfiguration = new WireMockConfiguration()
+                .templatingEnabled(true)
+                .extensions(new CustomResponseTransformer());
         wireMockServer = new WireMockServer(wireMockConfiguration.dynamicPort());
         wireMockServer.start();
-        configuration = new Configuration.ConfigurationBuilder().withUrl("http://localhost:" + wireMockServer.port()).withContentType(ContentType.APPLICATION_JSON).build();
+        configuration = new Configuration.ConfigurationBuilder()
+                .withUrl("http://localhost:" + wireMockServer.port())
+                .withContentType(ContentType.APPLICATION_JSON)
+                .build();
         communication = new CommunicationImpl(configuration);
         readerUtils = new FileReaderUtils();
     }
