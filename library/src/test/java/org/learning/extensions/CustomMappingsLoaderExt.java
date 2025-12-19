@@ -26,12 +26,13 @@ public class CustomMappingsLoaderExt implements MappingsLoaderExtension {
     public void loadMappingsInto(StubMappings stubMappings) {
         var fileExt = new String[]{"json"};
         // Filter out all the JSON files from the root dir
-        var mapings = FileUtils.iterateFiles(new File(rootDir), fileExt, false);
+        var mappings = FileUtils.iterateFiles(new File(rootDir), fileExt, false);
 
         // read the content and load them using stubMappings
-        mapings.forEachRemaining((file -> {
+        mappings.forEachRemaining((file -> {
             try {
                 var jsonContent = FileUtils.readFileToString(file, StandardCharsets.UTF_8);
+                // Add/load them using the stubMappings object
                 var mapping = StubMapping.buildFrom(jsonContent);
                 stubMappings.addMapping(mapping);
             } catch (Exception e) {
