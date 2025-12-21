@@ -31,14 +31,16 @@ public class TestDeleteWithJunitExt {
 
         var stub = WireMock.delete(WireMock.urlPathTemplate("/pet/{petId}"))
                 .withPathParam("petId", WireMock.equalTo("1"))
-                .withBasicAuth("admin", "welcome")
+                // use admin & welcome
+                .withBasicAuth("", "")
                 .willReturn(
                         WireMock.ok()
                 );
 
         var wiremock = wireMockRuntimeInfo.getWireMock();
         wiremock.register(stub);
-        var response = communication.deletePetById("1", "admin", "welcome");
+        // use admin & welcome
+        var response = communication.deletePetById("1", "", "");
         Assertions.assertNotNull(response);
         Assertions.assertEquals(HttpStatus.SC_OK, response.returnResponse().getStatusLine().getStatusCode());
     }
